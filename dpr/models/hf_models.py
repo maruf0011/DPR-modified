@@ -15,10 +15,10 @@ from typing import Tuple
 import torch
 from torch import Tensor as T
 from torch import nn
-from transformers.modeling_bert import BertConfig, BertModel
+from transformers import BertConfig, BertModel
 from transformers.optimization import AdamW
-from transformers.tokenization_bert import BertTokenizer
-from transformers.tokenization_roberta import RobertaTokenizer
+from transformers import BertTokenizer
+from transformers import RobertaTokenizer
 
 from dpr.models.biencoder import BiEncoder
 from dpr.utils.data_utils import Tensorizer
@@ -218,11 +218,27 @@ class HFBertEncoder(BertModel):
         attention_mask: T,
         representation_token_pos=0,
     ) -> Tuple[T, ...]:
+        unique_device = list(set([param.device for param in super().parameters()]))
+        # print('hf_model_py ', input_ids.device, token_type_ids.device, attention_mask.device)
+        # print('hf models ', set([param.device.type for param in super().parameters()]))
+        print('unique dev', unique_device)
+
+        # input_ids = torch.tensor(input_ids, device = unique_device[0])
+        # token_type_ids = torch.tensor(token_type_ids, device = unique_device[0])
+        # attention_mask =  torch.tensor(attention_mask, device = unique_device[0])
+        
+        input_ids = input_ids.clone().detach().to(unique_device[0])
+        token_type_ids = token_type_ids.clone().detach().to(unique_device[0])
+        attention_mask = attention_mask.clone().detach().to(unique_device[0])
+
+        print('hf_model_py mod ', input_ids.device, token_type_ids.device, attention_mask.device)
+        
         if self.config.output_hidden_states:
             sequence_output, pooled_output, hidden_states = super().forward(
                 input_ids=input_ids,
                 token_type_ids=token_type_ids,
                 attention_mask=attention_mask,
+                return_dict=False
             )
         else:
             hidden_states = None
@@ -230,10 +246,14 @@ class HFBertEncoder(BertModel):
                 input_ids=input_ids,
                 token_type_ids=token_type_ids,
                 attention_mask=attention_mask,
+                return_dict=False
             )
 
         if isinstance(representation_token_pos, int):
+            # print('FUCK YOU', type(representation_token_pos), representation_token_pos)
+            # print(sequence_output)
             pooled_output = sequence_output[:, representation_token_pos, :]
+            # print('LOL', pooled_output)
         else:  # treat as a tensor
             bsz = sequence_output.size(0)
             assert (

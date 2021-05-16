@@ -27,3 +27,12 @@ squad1_train:
 squad1_dev:
   _target_: dpr.data.biencoder_data.JsonQADataset
   file: data.retriever.squad1-dev
+
+covid_train:
+  _target_: dpr.data.biencoder_data.JsonQADataset
+  file: data.retriever.covid-train
+
+covid_dev:
+  _target_: dpr.data.biencoder_data.JsonQADataset
+  file: data.retriever.covid-train
+

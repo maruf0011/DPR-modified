@@ -51,9 +51,16 @@ def gen_ctx_vectors(
     results = []
     for j, batch_start in enumerate(range(0, n, bsz)):
         batch = ctx_rows[batch_start : batch_start + bsz]
+        # print('bathc => ', batch[0])
+        # print('btype => ', type(batch[0]))
+
+        # print("LOL ", batch[0][0], type(batch[0][0]))
+
+        # print("LOL ", batch[0][1].text, type(batch[0][1]))
+
         batch_token_tensors = [
             tensorizer.text_to_tensor(
-                ctx[1].text, title=ctx[1].title if insert_title else None
+                ctx[1]['text'], title=None
             )
             for ctx in batch
         ]
@@ -141,10 +148,15 @@ def main(cfg: DictConfig):
 
     logger.info("reading data source: %s", cfg.ctx_src)
 
-    ctx_src = hydra.utils.instantiate(cfg.ctx_sources[cfg.ctx_src])
-    all_passages_dict = {}
-    ctx_src.load_data_to(all_passages_dict)
-    all_passages = [(k, v) for k, v in all_passages_dict.items()]
+    import json
+
+    with open(cfg.ctx_src, 'r') as src_f:
+        all_passages_dict = json.load(src_f)
+
+    # ctx_src = hydra.utils.instantiate(cfg.ctx_sources[cfg.ctx_src])
+    # all_passages_dict = {}
+    # ctx_src.load_data_to(all_passages_dict)
+    all_passages = [(int(k), v) for k, v in all_passages_dict.items()]
 
     shard_size = math.ceil(len(all_passages) / cfg.num_shards)
     start_idx = cfg.shard_id * shard_size

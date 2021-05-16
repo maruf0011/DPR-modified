@@ -34,6 +34,19 @@ RESOURCES_MAP = {
         "compressed": True,
         "desc": "Entire wikipedia passages set obtain by splitting all pages into 100-word segments (no overlap)",
     },
+    "data.covid_split.covid_psgs_w100": {
+        "s3_url": "https://dl.fbaipublicfiles.com/dpr/wikipedia_split/covid_psgs_w100.tsv.gz",
+        "original_ext": ".tsv",
+        "compressed": False,
+        "desc": "Entire wikipedia passages set obtain by splitting all pages into 100-word segments (no overlap)",
+    },
+    "data.retriever.covid-train": {
+        "s3_url": "https://dl.fbaipublicfiles.com/dpr/data/retriever/biencoder-covid-train.json.gz",
+        "original_ext": ".json",
+        "compressed": True,
+        "desc": "NQ train subset with passages pools for the Retriever training",
+        "license_files": NQ_LICENSE_FILES,
+    },
     "data.retriever.nq-dev": {
         "s3_url": "https://dl.fbaipublicfiles.com/dpr/data/retriever/biencoder-nq-dev.json.gz",
         "original_ext": ".json",
@@ -78,6 +91,13 @@ RESOURCES_MAP = {
         "original_ext": ".json",
         "compressed": True,
         "desc": "SQUAD 1.1 dev subset with passages pools for the Retriever train time validation",
+    },
+    "data.retriever.qas.covid_test": {
+        "s3_url": "https://dl.fbaipublicfiles.com/dpr/data/retriever/covid_test.qa.csv",
+        "original_ext": ".csv",
+        "compressed": False,
+        "desc": "NQ dev subset for Retriever validation and IR results generation",
+        "license_files": NQ_LICENSE_FILES,
     },
     "data.retriever.qas.nq-dev": {
         "s3_url": "https://dl.fbaipublicfiles.com/dpr/data/retriever/nq-dev.qa.csv",

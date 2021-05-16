@@ -87,6 +87,8 @@ class BiEncoder(nn.Module):
         sequence_output = None
         pooled_output = None
         hidden_states = None
+        # print('bi_enc ', ids.device, segments.device, attn_mask.device, type(representation_token_pos))
+        # print('bi_enc lol ', set([param.device.type for param in sub_model.parameters()]))
         if ids is not None:
             if fix_encoder:
                 with torch.no_grad():
@@ -383,7 +385,7 @@ class BiEncoderNllLoss(object):
             scores = scores.view(q_num, -1)
 
         softmax_scores = F.log_softmax(scores, dim=1)
-
+        # print("=====> smsc ", softmax_scores.device)
         loss = F.nll_loss(
             softmax_scores,
             torch.tensor(positive_idx_per_question).to(softmax_scores.device),
@@ -391,6 +393,7 @@ class BiEncoderNllLoss(object):
         )
 
         max_score, max_idxs = torch.max(softmax_scores, 1)
+        # print("=====> mxd ", max_idxs.device)
         correct_predictions_count = (
             max_idxs == torch.tensor(positive_idx_per_question).to(max_idxs.device)
         ).sum()
